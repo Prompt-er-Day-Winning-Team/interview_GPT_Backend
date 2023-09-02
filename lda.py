@@ -22,7 +22,7 @@ class TopicAnalyzer:
         corpus = [dictionary.doc2bow(text) for text in texts]
         tfidf = models.TfidfModel(corpus)
 
-        lda_model = gensim.models.ldamodel.LdaModel(corpus=tfidf[corpus], id2word=dictionary, num_topics=2, passes=10)
+        lda_model = gensim.models.ldamodel.LdaModel(corpus=tfidf[corpus], id2word=dictionary, num_topics=1, passes=10)
 
         topics = lda_model.print_topics(num_words=4)
         result = []
