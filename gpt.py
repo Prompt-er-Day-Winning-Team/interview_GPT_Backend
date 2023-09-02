@@ -2,8 +2,12 @@ import os
 from lda import TopicAnalyzer
 from langchain.llms import OpenAI
 from langchain import PromptTemplate, LLMChain
+from dotenv import load_dotenv
 
-os.environ["OPENAI_API_KEY"] = "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"
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
+
+os.environ["OPENAI_API_KEY"] = api_key
 davinci = OpenAI(model_name='text-davinci-003')
 
 analyzer = TopicAnalyzer()
