@@ -16,7 +16,7 @@ class User(Base):
     created_at: DateTime = Column(DateTime, default=datetime.now(), nullable=False)
     updated_at: DateTime = Column(DateTime, nullable=False)
 
-    interview: Interview = relationship('interview', lazy='subquery')
-    
+    # interview: Interview = relationship('interview', lazy='subquery')
+
     def __repr__(self):
         return f"User-{self.user_id}-{self.id}"
