@@ -11,7 +11,7 @@ from app.prompt.question import question
 from app.prompt.virtual_interview import virtual_interview
 
 
-class InterviewRepository:
+class InterviewPrepareRepository:
     def __init__(self, session=None):
         self.session = Session()
 
@@ -23,13 +23,30 @@ class InterviewRepository:
             if not user:
                 raise HTTPException(status_code=403, detail="회원 id가 틀립니다.")
             interview = Interview(user_id=user_id, **dict(interview_info))
+            self.session.add(interview)
+            self.session.commit()
+            return "success"
+        except:
+            self.session.rollback()
+            raise
+        finally:
+            self.session.close()
+
+    def create_persona(self, user_id: int, interview_id: int):
+        try:
+            user = self.session.query(User).get(user_id)
+            if not user:
+                raise HTTPException(status_code=403, detail="회원 id가 틀립니다.")
+            interview = self.session.query(Interview).get(interview_id)
+            if not interview:
+                raise HTTPException(status_code=403, detail="인터뷰 id가 틀립니다.")
 
             # 페르소나 생성
             persona_result = persona(
-                product_name=interview_info.product_name,
-                product_detail=interview_info.product_detail,
-                interview_goal=interview_info.interview_goal,
-                target_user=interview_info.target_user,
+                product_name=interview.product_name,
+                product_detail=interview.product_detail,
+                interview_goal=interview.interview_goal,
+                target_user=interview.target_user,
             )
 
             interview.persona = persona_result

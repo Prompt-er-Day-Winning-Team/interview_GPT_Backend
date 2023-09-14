@@ -3,8 +3,7 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends
 
 # from app.core.helper import check_jwt
-from app.repository.interview_repo import InterviewRepository
-from app.domain.request_domain import UserInfo, InterviewCreateInfo
+from app.domain.request_domain import UserInfo
 from app.repository.user_repo import UserRepository
 
 
