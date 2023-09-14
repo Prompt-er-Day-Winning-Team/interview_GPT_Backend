@@ -25,7 +25,9 @@ class InterviewPrepareRepository:
             interview = Interview(user_id=user_id, **dict(interview_info))
             self.session.add(interview)
             self.session.commit()
-            return "success"
+            return {
+                "interviewId": interview.interview_id,
+            }
         except:
             self.session.rollback()
             raise
