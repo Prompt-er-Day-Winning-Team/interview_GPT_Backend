@@ -24,7 +24,7 @@ class UserRepository:
             user = User(**dict(user_info))
             self.session.add(user)
             self.session.commit()
-            return "success"
+            return {"userId": user.user_id}
         except:
             self.session.rollback()
             raise
@@ -38,7 +38,7 @@ class UserRepository:
                 user_info.password.encode("utf-8"), user.password.encode("utf-8")
             )
             if check_result:
-                return "success"
+                return {"userId": user.user_id}
             raise HTTPException(status_code=401, detail="로그인 정보가 틀립니다.")
         except:
             self.session.rollback()
