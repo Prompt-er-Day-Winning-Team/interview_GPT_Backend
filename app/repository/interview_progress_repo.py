@@ -94,16 +94,19 @@ class InterviewProgressRepository:
             interview_result = self.session.query(InterviewResult).get(
                 interview_result_id
             )
-            interview_contents = json.loads(interview_result.interview_contents)
-
-            if answer_audio_file:
-                interview_contents[-1]["answer"] = whisper(answer_audio_file)
+            if interview_result.interview_contents:
+                interview_contents = json.loads(interview_result.interview_contents)
+            else:
+                interview_contents = {}
 
             question_list = json.loads(interview.question_list)
             only_question_list = []
             for category in question_list:
                 for question_set in question_list[category]:
                     only_question_list.append(question_set["question"])
+
+            if answer_audio_file:
+                interview_contents[-1]["answer"] = whisper(answer_audio_file)
 
             # 첫 번째 질문인 경우
             if not interview_result.interview_contents or not interview_contents:
