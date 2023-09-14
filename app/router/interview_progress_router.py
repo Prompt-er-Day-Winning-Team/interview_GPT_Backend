@@ -1,6 +1,6 @@
 from os import stat
 from typing import Optional, List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 
 # from app.core.helper import check_jwt
 from app.repository.interview_progress_repo import InterviewProgressRepository
@@ -41,14 +41,14 @@ async def create_interview_contents(
     user_id: int,
     interview_id: int,
     interview_result_id: int,
-    interview_contents_info: InterviewContentsInfo,
+    answer_audio_file: bytes = File(None),
 ):
     interview_progress_repo = InterviewProgressRepository()
     interview_contents = interview_progress_repo.create_interview_contents(
         user_id=user_id,
         interview_id=interview_id,
         interview_result_id=interview_result_id,
-        interview_contents_info=interview_contents_info,
+        answer_audio_file=answer_audio_file,
     )
 
     return interview_contents

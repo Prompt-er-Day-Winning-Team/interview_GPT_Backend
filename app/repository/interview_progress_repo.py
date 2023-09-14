@@ -1,6 +1,7 @@
 import json
 from fastapi import HTTPException
 import random
+from fastapi import UploadFile, File
 from typing import Dict
 
 from app import Session
@@ -9,6 +10,7 @@ from app.repository.model.interview import Interview
 from app.repository.model.interview_result import InterviewResult
 from app.domain.request_domain import InterviewContentsInfo
 from app.prompt.instant_question import instant_question
+from app.prompt.whisper import whisper
 
 
 class InterviewProgressRepository:
@@ -80,7 +82,7 @@ class InterviewProgressRepository:
         user_id: int,
         interview_id: int,
         interview_result_id: int,
-        interview_contents_info: InterviewContentsInfo,
+        answer_audio_file: bytes = File(None),
     ):
         try:
             user = self.session.query(User).get(user_id)
@@ -92,7 +94,10 @@ class InterviewProgressRepository:
             interview_result = self.session.query(InterviewResult).get(
                 interview_result_id
             )
-            interview_contents = interview_contents_info.interview_contents
+            interview_contents = json.loads(interview_result.interview_contents)
+
+            if answer_audio_file:
+                interview_contents[-1]["answer"] = whisper(answer_audio_file)
 
             question_list = json.loads(interview.question_list)
             only_question_list = []
@@ -137,7 +142,7 @@ class InterviewProgressRepository:
             # 꼬리질문을 해야 하는 경우
             if interview_contents[-1]["question"] in only_question_list:
                 is_follow_on = random.choice([True, False])
-                print(is_follow_on)
+                # print(is_follow_on)
                 if is_follow_on:
                     # 인터뷰 질문 생성
                     instant_question_result = instant_question(
@@ -219,75 +224,6 @@ class InterviewProgressRepository:
             self.session.add(interview_result)
             self.session.commit()
             return {"isFinished": False, "interviewContents": interview_contents}
-        except:
-            self.session.rollback()
-            raise
-        finally:
-            self.session.close()
-
-    def create_question_list(self, user_id: int, interview_id: int):
-        try:
-            user = self.session.query(User).get(user_id)
-            if not user:
-                raise HTTPException(status_code=403, detail="회원 id가 틀립니다.")
-            interview = self.session.query(Interview).get(interview_id)
-            if not interview:
-                raise HTTPException(status_code=403, detail="인터뷰 id가 틀립니다.")
-
-            # 질문리스트 생성
-            question_list_result = question(
-                product_name=interview.product_name,
-                product_detail=interview.product_detail,
-                interview_goal=interview.interview_goal,
-                target_user=interview.target_user,
-            )
-
-            interview.question_list = question_list_result
-            self.session.add(interview)
-            self.session.commit()
-
-            result = {
-                "interviewId": interview.interview_id,
-                "productName": interview.product_name,
-                "interviewGoal": interview.interview_goal,
-                "status": interview.status,
-                "questionList": json.loads(question_list_result),
-            }
-            return result
-        except:
-            self.session.rollback()
-            raise
-        finally:
-            self.session.close()
-
-    def create_virtual_interview(self, user_id: int, interview_id: int):
-        try:
-            user = self.session.query(User).get(user_id)
-            if not user:
-                raise HTTPException(status_code=403, detail="회원 id가 틀립니다.")
-            interview = self.session.query(Interview).get(interview_id)
-            if not interview:
-                raise HTTPException(status_code=403, detail="인터뷰 id가 틀립니다.")
-
-            # 가상인터뷰 생성
-            virtual_interview_result = virtual_interview(
-                product_name=interview.product_name,
-                product_detail=interview.product_detail,
-                interview_goal=interview.interview_goal,
-                target_user=interview.target_user,
-                persona=interview.persona,
-                question_list=interview.question_list,
-            )
-
-            interview.virtual_interview = virtual_interview_result
-            self.session.add(interview)
-            self.session.commit()
-
-            result = {
-                "interviewId": interview.interview_id,
-                "virtualInterview": json.loads(virtual_interview_result),
-            }
-            return result
         except:
             self.session.rollback()
             raise
