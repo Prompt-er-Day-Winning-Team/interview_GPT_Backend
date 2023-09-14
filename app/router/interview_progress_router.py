@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 
 # from app.core.helper import check_jwt
 from app.repository.interview_progress_repo import InterviewProgressRepository
-from app.domain.request_domain import InterviewCreateInfo
+from app.domain.request_domain import InterviewContentsInfo
 
 
 interview_progress_router = APIRouter(
@@ -38,13 +38,17 @@ async def create_interview_result(user_id: int, interview_id: int):
 # 인터뷰 진행
 @interview_progress_router.post(path="/{interview_result_id}")
 async def create_interview_contents(
-    user_id: int, interview_id: int, interview_result_id: int
+    user_id: int,
+    interview_id: int,
+    interview_result_id: int,
+    interview_contents_info: InterviewContentsInfo,
 ):
     interview_progress_repo = InterviewProgressRepository()
     interview_contents = interview_progress_repo.create_interview_contents(
         user_id=user_id,
         interview_id=interview_id,
         interview_result_id=interview_result_id,
+        interview_contents_info=interview_contents_info,
     )
 
     return interview_contents

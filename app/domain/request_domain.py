@@ -37,3 +37,21 @@ class InterviewCreateInfo(CamelModel):
         },
         "from_attributes": True,
     }
+
+
+# 인터뷰 내용 전달
+class InterviewContentsInfo(CamelModel):
+    is_finished: bool
+    interview_contents: list
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "isFinished": False,
+                    "interviewContents": [],
+                }
+            ]
+        },
+        "from_attributes": True,
+    }

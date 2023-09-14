@@ -1,14 +1,14 @@
 import json
 from fastapi import HTTPException
+import random
 from typing import Dict
 
 from app import Session
 from app.repository.model.user import User
 from app.repository.model.interview import Interview
 from app.repository.model.interview_result import InterviewResult
-from app.prompt.persona import persona
-from app.prompt.question import question
-from app.prompt.virtual_interview import virtual_interview
+from app.domain.request_domain import InterviewContentsInfo
+from app.prompt.instant_question import instant_question
 
 
 class InterviewProgressRepository:
@@ -76,7 +76,11 @@ class InterviewProgressRepository:
             self.session.close()
 
     def create_interview_contents(
-        self, user_id: int, interview_id: int, interview_result_id: int
+        self,
+        user_id: int,
+        interview_id: int,
+        interview_result_id: int,
+        interview_contents_info: InterviewContentsInfo,
     ):
         try:
             user = self.session.query(User).get(user_id)
@@ -88,37 +92,133 @@ class InterviewProgressRepository:
             interview_result = self.session.query(InterviewResult).get(
                 interview_result_id
             )
+            interview_contents = interview_contents_info.interview_contents
 
             question_list = json.loads(interview.question_list)
-            # if not interview_result.interview_contents:
-            #     interview_result.interview_contents[question_list.keys()[0]] = {
-            #         "question":
-            #     }
-
             only_question_list = []
             for category in question_list:
                 for question_set in question_list[category]:
                     only_question_list.append(question_set["question"])
 
-            print(only_question_list)
+            # 첫 번째 질문인 경우
+            if not interview_result.interview_contents or not interview_contents:
+                interview_contents = [
+                    {
+                        "question": only_question_list[0],
+                        "answer": "",
+                    }
+                ]
+                interview_result.interview_contents = json.dumps(
+                    interview_contents, ensure_ascii=False
+                )
+                self.session.add(interview_result)
+                self.session.commit()
+                return {"isFinished": False, "interviewContents": interview_contents}
 
-            # # 인터뷰 질문 생성
-            # persona_result = persona(
-            #     product_name=interview.product_name,
-            #     product_detail=interview.product_detail,
-            #     interview_goal=interview.interview_goal,
-            #     target_user=interview.target_user,
-            # )
+            # if not interview_result.interview_contents and not interview_contents:
+            #     first_category = list(question_list.keys())[0]
+            #     interview_contents = {
+            #         first_category: [
+            #             {
+            #                 "question": question_list[first_category][0]["question"],
+            #                 "answer": "",
+            #             }
+            #         ]
+            #     }
+            #     interview_result.interview_contents = json.dumps(
+            #         interview_contents, ensure_ascii=False
+            #     )
+            #     self.session.add(interview_result)
+            #     self.session.commit()
+            #     return interview_contents
 
-            # interview.persona = persona_result
-            # self.session.add(interview)
-            # self.session.commit()
+            # last_category = list(interview_contents.keys())[-1]
 
-            # result = {
-            #     "interviewId": interview.interview_id,
-            #     "persona": json.loads(persona_result),
-            # }
-            # return result
+            # 꼬리질문을 해야 하는 경우
+            if interview_contents[-1]["question"] in only_question_list:
+                is_follow_on = random.choice([True, False])
+                print(is_follow_on)
+                if is_follow_on:
+                    # 인터뷰 질문 생성
+                    instant_question_result = instant_question(
+                        product_name=interview.product_name,
+                        product_detail=interview.product_detail,
+                        interview_goal=interview.interview_goal,
+                        target_user=interview.target_user,
+                        chat_history=interview_contents,
+                    )
+                    interview_contents.append(
+                        {
+                            "question": instant_question_result,
+                            "answer": "",
+                        }
+                    )
+                    interview_result.interview_contents = json.dumps(
+                        interview_contents, ensure_ascii=False
+                    )
+                    self.session.add(interview_result)
+                    self.session.commit()
+                    return {
+                        "isFinished": False,
+                        "interviewContents": interview_contents,
+                    }
+
+            # if interview_contents[last_category][-1]["question"] in only_question_list:
+            #     is_follow_on = random.choice([True, False])
+            #     print(is_follow_on)
+            #     if is_follow_on:
+            #         # 인터뷰 질문 생성
+            #         instant_question_result = instant_question(
+            #             product_name=interview.product_name,
+            #             product_detail=interview.product_detail,
+            #             interview_goal=interview.interview_goal,
+            #             target_user=interview.target_user,
+            #             chat_history=interview_contents,
+            #         )
+            #         interview_contents[last_category].append(
+            #             {
+            #                 "question": instant_question_result,
+            #                 "answer": "",
+            #             }
+            #         )
+            #         interview_result.interview_contents = json.dumps(
+            #             interview_contents, ensure_ascii=False
+            #         )
+            #         self.session.add(interview_result)
+            #         self.session.commit()
+            #         return interview_contents
+
+            # 질문리스트의 다음 질문을 해야 하는 경우
+            search_idx = -1
+            while True:
+                if interview_contents[search_idx]["question"] in only_question_list:
+                    last_origin_question_idx = only_question_list.index(
+                        interview_contents[search_idx]["question"]
+                    )
+                    break
+                search_idx -= 1
+
+            # 더 이상 질문이 없는 경우
+            if last_origin_question_idx == len(only_question_list) - 1:
+                interview_result.interview_contents = json.dumps(
+                    interview_contents, ensure_ascii=False
+                )
+                self.session.add(interview_result)
+                self.session.commit()
+                return {"isFinished": True, "interviewContents": interview_contents}
+
+            interview_contents.append(
+                {
+                    "question": only_question_list[last_origin_question_idx + 1],
+                    "answer": "",
+                }
+            )
+            interview_result.interview_contents = json.dumps(
+                interview_contents, ensure_ascii=False
+            )
+            self.session.add(interview_result)
+            self.session.commit()
+            return {"isFinished": False, "interviewContents": interview_contents}
         except:
             self.session.rollback()
             raise
