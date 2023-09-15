@@ -88,12 +88,27 @@ class InterviewProgressRepository:
             user = self.session.query(User).get(user_id)
             if not user:
                 raise HTTPException(status_code=403, detail="회원 id가 틀립니다.")
-            interview = self.session.query(Interview).get(interview_id)
-            if not interview:
-                raise HTTPException(status_code=403, detail="인터뷰 id가 틀립니다.")
-            interview_result = self.session.query(InterviewResult).get(
-                interview_result_id
+            interview = (
+                self.session.query(Interview)
+                .filter(
+                    Interview.interview_id == interview_id, Interview.user_id == user_id
+                )
+                .first()
             )
+            if not interview:
+                raise HTTPException(status_code=403, detail="인터뷰 id 또는 회원 id가 틀립니다.")
+            interview_result = (
+                self.session.query(InterviewResult)
+                .filter(
+                    InterviewResult.interview_result_id == interview_result_id,
+                    InterviewResult.interview_id == interview_id,
+                )
+                .first()
+            )
+            if not interview_result:
+                raise HTTPException(
+                    status_code=403, detail="인터뷰 결과 id 또는 인터뷰 id가 틀립니다."
+                )
             if interview_result.interview_contents:
                 interview_contents = json.loads(interview_result.interview_contents)
             else:
@@ -121,26 +136,10 @@ class InterviewProgressRepository:
                 )
                 self.session.add(interview_result)
                 self.session.commit()
-                return {"isFinished": False, "interviewContents": interview_contents}
-
-            # if not interview_result.interview_contents and not interview_contents:
-            #     first_category = list(question_list.keys())[0]
-            #     interview_contents = {
-            #         first_category: [
-            #             {
-            #                 "question": question_list[first_category][0]["question"],
-            #                 "answer": "",
-            #             }
-            #         ]
-            #     }
-            #     interview_result.interview_contents = json.dumps(
-            #         interview_contents, ensure_ascii=False
-            #     )
-            #     self.session.add(interview_result)
-            #     self.session.commit()
-            #     return interview_contents
-
-            # last_category = list(interview_contents.keys())[-1]
+                return {
+                    "isFinished": False,
+                    "interviewQuestion": interview_contents[-1]["question"],
+                }
 
             # 꼬리질문을 해야 하는 경우
             if interview_contents[-1]["question"] in only_question_list:
@@ -168,33 +167,8 @@ class InterviewProgressRepository:
                     self.session.commit()
                     return {
                         "isFinished": False,
-                        "interviewContents": interview_contents,
+                        "interviewQuestion": interview_contents[-1]["question"],
                     }
-
-            # if interview_contents[last_category][-1]["question"] in only_question_list:
-            #     is_follow_on = random.choice([True, False])
-            #     print(is_follow_on)
-            #     if is_follow_on:
-            #         # 인터뷰 질문 생성
-            #         instant_question_result = instant_question(
-            #             product_name=interview.product_name,
-            #             product_detail=interview.product_detail,
-            #             interview_goal=interview.interview_goal,
-            #             target_user=interview.target_user,
-            #             chat_history=interview_contents,
-            #         )
-            #         interview_contents[last_category].append(
-            #             {
-            #                 "question": instant_question_result,
-            #                 "answer": "",
-            #             }
-            #         )
-            #         interview_result.interview_contents = json.dumps(
-            #             interview_contents, ensure_ascii=False
-            #         )
-            #         self.session.add(interview_result)
-            #         self.session.commit()
-            #         return interview_contents
 
             # 질문리스트의 다음 질문을 해야 하는 경우
             search_idx = -1
@@ -211,9 +185,13 @@ class InterviewProgressRepository:
                 interview_result.interview_contents = json.dumps(
                     interview_contents, ensure_ascii=False
                 )
+                interview_result.interview_url = "Done"
                 self.session.add(interview_result)
                 self.session.commit()
-                return {"isFinished": True, "interviewContents": interview_contents}
+                return {
+                    "isFinished": True,
+                    "interviewQuestion": interview_contents[-1]["question"],
+                }
 
             interview_contents.append(
                 {
@@ -226,7 +204,10 @@ class InterviewProgressRepository:
             )
             self.session.add(interview_result)
             self.session.commit()
-            return {"isFinished": False, "interviewContents": interview_contents}
+            return {
+                "isFinished": False,
+                "interviewQuestion": interview_contents[-1]["question"],
+            }
         except:
             self.session.rollback()
             raise
