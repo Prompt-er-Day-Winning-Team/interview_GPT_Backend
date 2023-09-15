@@ -1,6 +1,8 @@
 import json
 from fastapi import HTTPException
 from typing import Dict
+from rq import Queue
+from worker import create_persona_ai
 
 from app import Session
 from app.repository.model.user import User
@@ -9,6 +11,8 @@ from app.domain.request_domain import InterviewCreateInfo
 from app.prompt.persona import persona
 from app.prompt.question import question
 from app.prompt.virtual_interview import virtual_interview
+
+# q = Queue(connection=conn)
 
 
 class InterviewPrepareRepository:
@@ -43,22 +47,30 @@ class InterviewPrepareRepository:
             if not interview:
                 raise HTTPException(status_code=403, detail="인터뷰 id가 틀립니다.")
 
-            # 페르소나 생성
-            persona_result = persona(
-                product_name=interview.product_name,
-                product_detail=interview.product_detail,
-                interview_goal=interview.interview_goal,
-                target_user=interview.target_user,
-            )
+            if interview.persona:
+                if interview.persona == "Waiting":
+                    result = {
+                        "interviewId": interview.interview_id,
+                        "persona": "Waiting",
+                    }
+                    return result
+                result = {
+                    "interviewId": interview.interview_id,
+                    "persona": json.loads(interview.persona),
+                }
+                return result
 
-            interview.persona = persona_result
+            create_persona_ai.delay(user_id, interview_id)
+
+            interview.persona = "Waiting"
             self.session.add(interview)
             self.session.commit()
 
             result = {
                 "interviewId": interview.interview_id,
-                "persona": json.loads(persona_result),
+                "persona": "Waiting",
             }
+
             return result
         except:
             self.session.rollback()
