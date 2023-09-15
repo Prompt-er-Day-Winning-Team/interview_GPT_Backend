@@ -1,18 +1,15 @@
 import json
 from fastapi import HTTPException
-from typing import Dict
-from rq import Queue
-from worker import create_persona_ai
+from worker import (
+    create_persona_ai,
+    create_question_list_ai,
+    create_virtual_interview_ai,
+)
 
 from app import Session
 from app.repository.model.user import User
 from app.repository.model.interview import Interview
 from app.domain.request_domain import InterviewCreateInfo
-from app.prompt.persona import persona
-from app.prompt.question import question
-from app.prompt.virtual_interview import virtual_interview
-
-# q = Queue(connection=conn)
 
 
 class InterviewPrepareRepository:
@@ -87,15 +84,28 @@ class InterviewPrepareRepository:
             if not interview:
                 raise HTTPException(status_code=403, detail="인터뷰 id가 틀립니다.")
 
-            # 질문리스트 생성
-            question_list_result = question(
-                product_name=interview.product_name,
-                product_detail=interview.product_detail,
-                interview_goal=interview.interview_goal,
-                target_user=interview.target_user,
-            )
+            if interview.question_list:
+                if interview.question_list == "Waiting":
+                    result = {
+                        "interviewId": interview.interview_id,
+                        "productName": interview.product_name,
+                        "interviewGoal": interview.interview_goal,
+                        "status": interview.status,
+                        "questionList": "Waiting",
+                    }
+                    return result
+                result = {
+                    "interviewId": interview.interview_id,
+                    "productName": interview.product_name,
+                    "interviewGoal": interview.interview_goal,
+                    "status": interview.status,
+                    "questionList": json.loads(interview.question_list),
+                }
+                return result
 
-            interview.question_list = question_list_result
+            create_question_list_ai.delay(user_id, interview_id)
+
+            interview.question_list = "Waiting"
             self.session.add(interview)
             self.session.commit()
 
@@ -104,7 +114,7 @@ class InterviewPrepareRepository:
                 "productName": interview.product_name,
                 "interviewGoal": interview.interview_goal,
                 "status": interview.status,
-                "questionList": json.loads(question_list_result),
+                "questionList": "Waiting",
             }
             return result
         except:
@@ -122,23 +132,28 @@ class InterviewPrepareRepository:
             if not interview:
                 raise HTTPException(status_code=403, detail="인터뷰 id가 틀립니다.")
 
-            # 가상인터뷰 생성
-            virtual_interview_result = virtual_interview(
-                product_name=interview.product_name,
-                product_detail=interview.product_detail,
-                interview_goal=interview.interview_goal,
-                target_user=interview.target_user,
-                persona=interview.persona,
-                question_list=interview.question_list,
-            )
+            if interview.virtual_interview:
+                if interview.virtual_interview == "Waiting":
+                    result = {
+                        "interviewId": interview.interview_id,
+                        "virtualInterview": "Waiting",
+                    }
+                    return result
+                result = {
+                    "interviewId": interview.interview_id,
+                    "virtualInterview": json.loads(interview.virtual_interview),
+                }
+                return result
 
-            interview.virtual_interview = virtual_interview_result
+            create_virtual_interview_ai.delay(user_id, interview_id)
+
+            interview.virtual_interview = "Waiting"
             self.session.add(interview)
             self.session.commit()
 
             result = {
                 "interviewId": interview.interview_id,
-                "virtualInterview": json.loads(virtual_interview_result),
+                "virtualInterview": "Waiting",
             }
             return result
         except:
