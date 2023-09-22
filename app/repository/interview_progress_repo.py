@@ -1,8 +1,10 @@
 import json
-from fastapi import HTTPException
 import random
-from fastapi import UploadFile, File
 from typing import Dict
+from fastapi import HTTPException, UploadFile, File
+from worker import (
+    create_summary_ai,
+)
 
 from app import Session
 from app.repository.model.user import User
@@ -120,6 +122,7 @@ class InterviewProgressRepository:
                 for question_set in question_list[category]:
                     only_question_list.append(question_set["question"])
 
+            # 음성 인식
             if answer_audio_file:
                 interview_contents[-1]["answer"] = whisper(answer_audio_file)
 
@@ -186,6 +189,8 @@ class InterviewProgressRepository:
                     interview_contents, ensure_ascii=False
                 )
                 interview_result.interview_url = "Done"
+                create_summary_ai.delay(user_id, interview_id, interview_result_id)
+                interview_result.interview_summary = "Waiting"
                 self.session.add(interview_result)
                 self.session.commit()
                 return {
@@ -208,6 +213,40 @@ class InterviewProgressRepository:
                 "isFinished": False,
                 "interviewQuestion": interview_contents[-1]["question"],
             }
+        except:
+            self.session.rollback()
+            raise
+        finally:
+            self.session.close()
+
+    def read_interview_result(
+        self, user_id: int, interview_id: int, interview_result_id: int
+    ):
+        try:
+            interview_result = (
+                self.session.query(InterviewResult)
+                .filter(
+                    InterviewResult.interview_result_id == interview_result_id,
+                    InterviewResult.interview_id == interview_id,
+                )
+                .first()
+            )
+            if not interview_result:
+                raise HTTPException(
+                    status_code=403, detail="인터뷰 결과 id 또는 인터뷰 id가 틀립니다."
+                )
+            if interview_result.interview_url != "Done":
+                raise HTTPException(status_code=403, detail="아직 완료되지 않은 인터뷰 결과입니다.")
+
+            result = {
+                "interviewResultId": interview_result.interview_result_id,
+                "interviewSummary": interview_result.interview_summary
+                if interview_result.interview_summary == "Waiting"
+                else json.loads(interview_result.interview_summary),
+                "interviewContents": json.loads(interview_result.interview_contents),
+            }
+
+            return result
         except:
             self.session.rollback()
             raise

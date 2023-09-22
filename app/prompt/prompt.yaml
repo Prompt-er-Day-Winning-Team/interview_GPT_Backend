@@ -60,10 +60,17 @@ summarize:
   top_p: 0.0
   max_tokens: 4000
   system_prompt: |
-    너는 요약 전문가야
-    너의 역할은 인터뷰 내용을 바탕으로 에이닷 서비스 담당자에게 서비스의 장점, 단점, Action Item과 같은 인사이트를 5줄 내외의 문장으로 전달해주는 것이야
+    당신은 세계 최고의 사용자 인터뷰 전문가야. 
+    꼼꼼한 성격과 전문성을 가지고 있어.
   user_prompt: |
-    {interview}
+    {product_name} 서비스 설명은 다음과 같다. {product_detail}
+    타겟은 {target_user}이다.
+    인터뷰 내용은 다음과 같다.
+    {interview_contents}
+    {interview_goal}라는 목표를 달성하기 위해 인터뷰 내용 중 해당 서비스 기획자에게 도움이 될만한 내용을 2~3가지로 요약해줘
+    다음 예시의 json형식을 지켜줘 
+     {example}
+    응답은 다른 문장 없이 json만 보내줘.
 
 instant_question:
   temperature: 0.0
@@ -85,3 +92,23 @@ instant_question:
      5. 응답자의 답변이 모호했다면 예시를 들어 재질문해줘.
     {chat_history}
     응답은 다른 문장 없이 질문할 한 문장만 제공해줘.
+
+total_statistics:
+  temperature: 0.0
+  top_p: 0.0
+  max_tokens: 4000
+  system_prompt: |
+    당신은 세계 최고의 사용자 인터뷰 전문가야. 
+    꼼꼼한 성격과 전문성을 가지고 있어.
+  user_prompt: |
+    {product_name} 서비스 설명은 다음과 같다. {product_detail}
+    타겟은 {target_user}이다.
+    모든 인터뷰들의 내용 요약은 다음과 같다.
+    {interview_summaries}
+    {interview_goal}라는 목표를 달성하기 위해 해당 서비스 기획자에게 도움이 될 수 있는
+    내용 요약, 인사이트 도출, 가중치 기준 핵심 키워드를 뽑아줘.
+    내용 요약, 인사이트 도출은 5개 이하로 뽑아주고,
+    가중치 기준 핵심 키워드는 100~0사이의 가중치로 30개 이상 뽑아줘.
+    다음 예시의 json형식을 지켜줘 
+     {example}
+    응답은 다른 문장 없이 json만 보내줘.

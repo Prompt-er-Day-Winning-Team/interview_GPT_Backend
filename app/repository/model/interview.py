@@ -22,6 +22,7 @@ class Interview(Base):
     virtual_interview: str = Column(Text(collation="utf8_unicode_ci"))
     total_interview_summary: str = Column(Text(collation="utf8_unicode_ci"))
     total_interview_insight: str = Column(Text(collation="utf8_unicode_ci"))
+    total_interview_keyword: str = Column(Text(collation="utf8_unicode_ci"))
     word_cloud: str = Column(Text(collation="utf8_unicode_ci"))
     created_at: DateTime = Column(DateTime, default=datetime.now(), nullable=False)
     updated_at: DateTime = Column(DateTime, default=datetime.now())

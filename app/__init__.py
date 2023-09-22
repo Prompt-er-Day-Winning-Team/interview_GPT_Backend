@@ -35,9 +35,11 @@ def create_app():
     from app.router.user_router import user_router
     from app.router.interview_prepare_router import interview_prepare_router
     from app.router.interview_progress_router import interview_progress_router
+    from app.router.interview_summary_router import interview_summary_router
 
     app.include_router(user_router)
     app.include_router(interview_prepare_router)
     app.include_router(interview_progress_router)
+    app.include_router(interview_summary_router)
 
     return app

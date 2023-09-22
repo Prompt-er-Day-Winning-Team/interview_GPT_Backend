@@ -14,10 +14,9 @@ import pandas as pd
 from app.core.config import config
 
 
-def summarize():
-    conf = OmegaConf.load("app/prompt/config.yaml")
-    interview = conf.interview
-
+def summarize(
+    product_name, product_detail, interview_goal, target_user, interview_contents
+):
     prompt_path = "app/prompt/prompt.yaml"
     prompt = OmegaConf.load(prompt_path)
     summarize_sys_template = prompt.summarize.system_prompt
@@ -41,7 +40,27 @@ def summarize():
         # model_kwargs={'top_p':conf.chat.top_p}
     )
 
-    sum_prompt = sum_messages.format_prompt(interview=interview)
+    example = """
+    [
+        {
+            title: "",
+            text: "",
+        },
+        {
+            title: "",
+            text: "",
+        },
+    ]
+    """
+
+    sum_prompt = sum_messages.format_prompt(
+        product_name=product_name,
+        product_detail=product_detail,
+        target_user=target_user,
+        interview_goal=interview_goal,
+        interview_contents=interview_contents,
+        example=example,
+    )
     sum_prompt = sum_prompt.to_messages()
 
     msg = LLM(sum_prompt)
