@@ -123,6 +123,7 @@ class InterviewProgressRepository:
                     only_question_list.append(question_set["question"])
 
             # 음성 인식
+            print(answer_audio_file)
             if answer_audio_file:
                 interview_contents[-1]["answer"] = whisper(answer_audio_file)
 
