@@ -7,6 +7,7 @@ from worker import (
 )
 
 from app import Session
+from app.prompt.request_validation import request_validation
 from app.repository.model.user import User
 from app.repository.model.interview import Interview
 from app.domain.request_domain import InterviewCreateInfo
@@ -23,6 +24,22 @@ class InterviewPrepareRepository:
             user = self.session.query(User).get(user_id)
             if not user:
                 raise HTTPException(status_code=403, detail="회원 id가 틀립니다.")
+
+            # 페르소나 생성
+            request_validation_result = request_validation(
+                product_name=interview_info.product_name,
+                product_detail=interview_info.product_detail,
+                interview_goal=interview_info.interview_goal,
+                target_user=interview_info.target_user,
+            )
+
+            request_validation_result = json.loads(request_validation_result)
+
+            if request_validation_result["type"] == "문제있음":
+                raise HTTPException(
+                    status_code=403, detail=request_validation_result["answer"]
+                )
+
             interview = Interview(user_id=user_id, **dict(interview_info))
             self.session.add(interview)
             self.session.commit()
