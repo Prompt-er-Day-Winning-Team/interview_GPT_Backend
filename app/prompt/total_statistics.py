@@ -15,7 +15,7 @@ from app.core.config import config
 
 
 def total_statistics(
-    product_name, product_detail, interview_goal, target_user, interview_summaries
+    status, product_name, product_detail, interview_goal, target_user, interview_summaries
 ):
     prompt_path = "app/prompt/prompt.yaml"
     prompt = OmegaConf.load(prompt_path)
@@ -62,12 +62,13 @@ def total_statistics(
     """
 
     stat_prompt = stat_messages.format_prompt(
+        status=status,
         product_name=product_name,
         product_detail=product_detail,
         target_user=target_user,
         interview_goal=interview_goal,
         interview_summaries=interview_summaries,
-        example=example,
+        example=example
     )
     stat_prompt = stat_prompt.to_messages()
 

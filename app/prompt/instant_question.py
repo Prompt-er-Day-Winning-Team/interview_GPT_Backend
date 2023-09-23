@@ -14,7 +14,7 @@ from app.core.config import config
 
 
 def instant_question(
-    product_name, product_detail, interview_goal, target_user, chat_history
+    status, product_name, product_detail, interview_goal, target_user, chat_history
 ):
     conf = OmegaConf.load("app/prompt/config.yaml")
     scenario = conf.scenario
@@ -43,6 +43,7 @@ def instant_question(
     )
 
     instant_question_prompt = instant_question_messages.format_prompt(
+        status=status,
         product_name=product_name,
         product_detail=product_detail,
         target_user=target_user,

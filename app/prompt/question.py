@@ -14,7 +14,7 @@ import pandas as pd
 from app.core.config import config
 
 
-def question(product_name, product_detail, interview_goal, target_user):
+def question(status, product_name, product_detail, interview_goal, target_user):
     conf = OmegaConf.load("app/prompt/config.yaml")
     # interview_question = conf.interview_question
 
@@ -53,6 +53,7 @@ def question(product_name, product_detail, interview_goal, target_user):
     """
 
     question_tot_prompt = question_prompt.format_prompt(
+        status=status,
         product_name=product_name,
         product_detail=product_detail,
         target_user=target_user,

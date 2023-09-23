@@ -19,7 +19,7 @@ import os
 from app.core.config import config
 
 
-def question(product_name, product_detail, interview_goal, target_user):
+def question(status, product_name, product_detail, interview_goal, target_user):
     os.environ["SERPAPI_API_KEY"] = config.SERPAPI_API_KEY
 
     conf = OmegaConf.load("app/prompt/config.yaml")
@@ -60,6 +60,7 @@ def question(product_name, product_detail, interview_goal, target_user):
     """
 
     question_tot_prompt = question_prompt.format_prompt(
+        status=status,
         product_name=product_name,
         product_detail=product_detail,
         target_user=target_user,

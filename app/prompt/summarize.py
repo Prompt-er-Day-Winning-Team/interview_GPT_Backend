@@ -15,7 +15,7 @@ from app.core.config import config
 
 
 def summarize(
-    product_name, product_detail, interview_goal, target_user, interview_contents
+    status, product_name, product_detail, interview_goal, target_user, interview_contents
 ):
     prompt_path = "app/prompt/prompt.yaml"
     prompt = OmegaConf.load(prompt_path)
@@ -60,6 +60,7 @@ def summarize(
         interview_goal=interview_goal,
         interview_contents=interview_contents,
         example=example,
+        status=status
     )
     sum_prompt = sum_prompt.to_messages()
 

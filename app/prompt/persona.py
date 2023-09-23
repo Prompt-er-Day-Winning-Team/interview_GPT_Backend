@@ -14,7 +14,7 @@ import pandas as pd
 from app.core.config import config
 
 
-def persona(product_name, product_detail, interview_goal, target_user):
+def persona(status, product_name, product_detail, interview_goal, target_user):
     conf = OmegaConf.load("app/prompt/config.yaml")
 
     prompt_path = "app/prompt/prompt.yaml"
@@ -67,6 +67,7 @@ def persona(product_name, product_detail, interview_goal, target_user):
     """
 
     persona_prompt = persona_prompt.format_prompt(
+        status=status,
         product_name=product_name,
         product_detail=product_detail,
         target_user=target_user,

@@ -19,6 +19,12 @@ from app import Session
 
 session = Session()
 
+status_dict = {
+    1: '아이디어 - 초기 단계로 진출하고자 하는 시장과 해당 시장의 소비자를 이해하는 단계',
+    2: '컨셉 기획 - 아이디어를 바탕으로 제품의 컨셉을 기획하는 단계',
+    3: '프로토타입 - 컨셉을 구체화한 후 만든 프로토타입을 기준으로, 개선이 필요한 사항을 발견하는 단계',
+    4: '출시 - 의도한 대로 제품을 사용하고 있는지를 확인하고, 테스트를 위한 리서치를 시작하는 단계'
+}
 
 @app.task
 def create_persona_ai(user_id, interview_id):
@@ -35,6 +41,7 @@ def create_persona_ai(user_id, interview_id):
         product_detail=interview.product_detail,
         interview_goal=interview.interview_goal,
         target_user=interview.target_user,
+        status=status_dict[interview.status]
     )
 
     interview.persona = persona_result
@@ -59,6 +66,7 @@ def create_question_list_ai(user_id, interview_id):
         product_detail=interview.product_detail,
         interview_goal=interview.interview_goal,
         target_user=interview.target_user,
+        status=status_dict[interview.status]
     )
 
     interview.question_list = question_list_result
@@ -83,6 +91,7 @@ def create_virtual_interview_ai(user_id, interview_id):
         product_detail=interview.product_detail,
         interview_goal=interview.interview_goal,
         target_user=interview.target_user,
+        status=status_dict[interview.status],
         persona=interview.persona,
         question_list=interview.question_list,
     )
@@ -112,6 +121,7 @@ def create_summary_ai(user_id, interview_id, interview_result_id):
         product_detail=interview.product_detail,
         interview_goal=interview.interview_goal,
         target_user=interview.target_user,
+        status=status_dict[interview.status],
         interview_contents=interview_result.interview_contents,
     )
 
@@ -152,6 +162,7 @@ def create_total_statistics_ai(user_id, interview_id):
         product_detail=interview.product_detail,
         interview_goal=interview.interview_goal,
         target_user=interview.target_user,
+        status=status_dict[interview.status],
         interview_summaries=interview_summaries,
     )
 
