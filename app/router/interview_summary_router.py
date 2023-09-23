@@ -19,19 +19,25 @@ interview_summary_router = APIRouter(
         200: {
             "content": {
                 "application/json": {
-                    "example": [
-                        {
-                            "interview_id": 12,
-                            "name": "인터뷰 1",
-                            "interview_contents": "",
-                            "interview_insight": "",
-                            "updated_at": "2023-09-15T02:13:21",
-                            "interview_result_id": 3,
-                            "interview_url": "https://i-dot-gpt.com/interview-helper/users/1/interviews/12/interview-results/3",
-                            "interview_summary": "",
-                            "created_at": "2023-09-15T02:13:21",
-                        }
-                    ]
+                    "example": {
+                        "interviewId": 1,
+                        "totalInterviewSummary": [
+                            {
+                                "title": "",
+                                "text": "",
+                            },
+                        ],
+                        "totalInterviewInsight": [
+                            {
+                                "title": "",
+                                "text": "",
+                            },
+                        ],
+                        "totalInterviewKeyword": [
+                            {"text ": "", "value": 100},
+                            {"text": "", "value": 94},
+                        ],
+                    }
                 }
             }
         }
