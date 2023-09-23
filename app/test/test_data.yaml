@@ -10,8 +10,15 @@ haruzogak:
   product_name: 하루조각
   product_detail: |
     자동기록 서비스
-  interview_goal: 하루조각 만족도
+  interview_goal: 인스타그램 광고 서비스 효과
   target_user: 20대 직장인 여성
+
+carrot:
+  product_name: 당근
+  product_detail: |
+    중고거래
+  interview_goal: 서비스명 변경 효과
+  target_user: 40대 주부
 
 injection:
   product_name: SKT에이닷
