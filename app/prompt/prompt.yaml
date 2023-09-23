@@ -18,13 +18,12 @@ request_validation:
      {example}
     응답은 다른 문장 없이 json만 보내줘.
 
-
 question:
   temperature: 0.0
   top_p: 0.0
   max_tokens: 4000
   system_prompt: |
-    당신은 세계 최고의 사용자 인터뷰 전문가야. 
+    당신은 세계 최고의 사용자 인터뷰 전문가야.
   user_prompt: |
     서비스에 대해 사용자들이 어떻게 사용하는지 인터뷰를 진행하려고해
     서비스정보와 인터뷰 대상과 인터뷰 목적을 고려해서 인터뷰 질문지를 작성해줘
@@ -51,8 +50,7 @@ question_validation:
   temperature: 0.0
   top_p: 0.0
   max_token: 4000
-  system_prompt:
-   당신은 세계 최고의 사용자 인터뷰 전문가야.
+  system_prompt: 당신은 세계 최고의 사용자 인터뷰 전문가야.
   user_prompt: |
     서비스정보와 인터뷰 대상과 인터뷰 목적에 맞게 작성되었는지 적절한지 확인해줘. 부적절하거나 부족한 내용이 있다면 내용을 전문성있고 디테일하게 수정해줘
     서비스명: {product_name} 
@@ -76,7 +74,6 @@ question_validation:
     다음 예시의 json형식을 지켜줘 
       {example}
     응답은 다른 문장 없이 json만 보내줘.
-
 
 persona:
   temperature: 0.0
@@ -177,7 +174,7 @@ total_statistics:
       인터뷰 대상: {target_user}
       인터뷰 목적: {interview_goal}
     모든 인터뷰 내용 요약: {interview_summaries}
-    
+
     내용 요약, 인사이트 도출은 5개 이하로 뽑아주고,
     가중치 기준 핵심 키워드는 100~0사이의 가중치로 30개 이상 뽑아줘.
     다음 예시의 json형식을 지켜줘 
