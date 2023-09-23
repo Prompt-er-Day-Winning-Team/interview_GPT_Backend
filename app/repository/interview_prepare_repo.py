@@ -17,6 +17,53 @@ class InterviewPrepareRepository:
     def __init__(self, session=None):
         self.session = Session()
 
+    def read_interview_all(self, user_id: int):
+        try:
+            interviews = (
+                self.session.query(Interview).filter(Interview.user_id == user_id).all()
+            )
+            result = []
+
+            for interview in interviews:
+                if not interview.persona:
+                    result.append(
+                        {
+                            "interviewId": interview.interview_id,
+                            "interviewGoal": interview.interview_goal,
+                            "step": 1,
+                        }
+                    )
+                elif not interview.question_list:
+                    result.append(
+                        {
+                            "interviewId": interview.interview_id,
+                            "interviewGoal": interview.interview_goal,
+                            "step": 2,
+                        }
+                    )
+                elif not interview.virtual_interview:
+                    result.append(
+                        {
+                            "interviewId": interview.interview_id,
+                            "interviewGoal": interview.interview_goal,
+                            "step": 3,
+                        }
+                    )
+                else:
+                    result.append(
+                        {
+                            "interviewId": interview.interview_id,
+                            "interviewGoal": interview.interview_goal,
+                            "step": 4,
+                        }
+                    )
+            return result
+        except:
+            self.session.rollback()
+            raise
+        finally:
+            self.session.close()
+
     def create_interview(self, user_id: int, interview_info: InterviewCreateInfo):
         try:
             if interview_info.status not in [1, 2, 3, 4]:

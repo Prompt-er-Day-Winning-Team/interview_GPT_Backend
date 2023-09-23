@@ -16,6 +16,17 @@ interview_prepare_router = APIRouter(
 
 
 # 인터뷰 기본정보 입력
+@interview_prepare_router.get(
+    path="",
+    responses={200: {"content": {"application/json": {"example": {"interviewId": 1}}}}},
+)
+async def read_interview_all(user_id: int):
+    interview_prepare_repo = InterviewPrepareRepository()
+    interviews = interview_prepare_repo.read_interview_all(user_id=user_id)
+    return interviews
+
+
+# 인터뷰 기본정보 입력
 @interview_prepare_router.post(
     path="",
     responses={200: {"content": {"application/json": {"example": {"interviewId": 1}}}}},

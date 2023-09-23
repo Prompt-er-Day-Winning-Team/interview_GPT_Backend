@@ -17,7 +17,13 @@ from app.core.config import config
 
 
 def virtual_interview(
-    status, product_name, product_detail, interview_goal, target_user, persona, question_list
+    status,
+    product_name,
+    product_detail,
+    interview_goal,
+    target_user,
+    persona,
+    question_list,
 ):
     prompt_path = "app/prompt/prompt.yaml"
     prompt = OmegaConf.load(prompt_path)
