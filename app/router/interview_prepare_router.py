@@ -18,7 +18,26 @@ interview_prepare_router = APIRouter(
 # 인터뷰 기본정보 입력
 @interview_prepare_router.get(
     path="",
-    responses={200: {"content": {"application/json": {"example": {"interviewId": 1}}}}},
+    responses={
+        200: {
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "interviewId": 4,
+                            "interviewGoal": "I.GPT 인터뷰 질문 생성 기능의 부족한 점 파악",
+                            "step": 2,
+                        },
+                        {
+                            "interviewId": 5,
+                            "interviewGoal": "I.GPT 인터뷰 질문 생성 기능의 부족한 점 파악",
+                            "step": 4,
+                        },
+                    ]
+                }
+            }
+        }
+    },
 )
 async def read_interview_all(user_id: int):
     interview_prepare_repo = InterviewPrepareRepository()
