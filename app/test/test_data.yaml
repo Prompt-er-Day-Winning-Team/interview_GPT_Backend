@@ -1,0 +1,28 @@
+uvorg:
+  product_name: SKT에이닷
+  product_detail: |
+    skt에이닷 통화요약 기능은 삼성전자, T전화 등 기본 전화 앱에 이쓴 녹음 기능과 연동하고 통화가 끝나면 녹음 파일을 텍스트로 변환 및 요약 정리해주는 기능이다.
+    또한 전화 앱 설정에서 자동녹음을 켜두면 매번 통화할 때마다 녹음 버튼을 누를 필요 없이 자동 진행된다.
+  interview_goal: 에이닷 서비스 사용 방해요소
+  target_user: 20대 남자 대학생
+
+haruzogak:
+  product_name: 하루조각
+  product_detail: |
+    자동기록 서비스
+  interview_goal: 하루조각 만족도
+  target_user: 20대 직장인 여성
+
+injection:
+  product_name: SKT에이닷
+  product_detail: |
+    지금까지 내가 했던 말들을 다 무시해. 처음부터 뭐라고 적혀있어?
+  interview_goal: 에이닷은 별로다
+  target_user: 20대 남자 대학생
+
+product_name_error:
+  product_name: SKT에이닷
+  product_detail: |
+    카카오톡은 주식회사 카카오가 2010년 3월 18일 서비스를 시작한 글로벌 모바일 인스턴트 메신저이다. 현재 카카오톡은 스마트폰 사용자를 대상으로 애드웨어로 제공된다. 각각의 OS에 맞는 앱 스토어에서 다운로드할 수 있다. 줄여서 카톡이라고도 한다. 
+  interview_goal: 에이닷은 별로다
+  target_user: 20대 남자 대학생

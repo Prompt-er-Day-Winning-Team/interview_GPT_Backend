@@ -42,21 +42,21 @@ def total_statistics(
 
     example = """
     {
-        total_interview_summary: [
+        "total_interview_summary": [
             {
-                title: "",
-                text: "",
+                "title" : "",
+                "text" : "",
             },
         ],
-        total_interview_insight: [
+        "total_interview_insight" : [
             {
-                title: "",
-                text: "",
+                "title" : "",
+                "text" : "",
             },
         ],
-        total_interview_keyword: [
-            { text: "", value: 100 },
-            { text: "", value: 94 },
+        "total_interview_keyword" : [
+            { "text ": "", "value" : 100 },
+            { "text" : "", "value" : 94 },
         ]
     }
     """

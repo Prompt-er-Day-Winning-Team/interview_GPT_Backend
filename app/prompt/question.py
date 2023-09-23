@@ -45,8 +45,8 @@ def question(product_name, product_detail, interview_goal, target_user):
     {
     "서비스 편리성 및 기능성에 관한 질문" : [
         {
-        question: "통화요약 기능 사용 중 가장 편리하게 느꼈던 순간은 언제였나요?",
-        answer: "긴 통화 내용 요약, 중요 포인트 체크"
+        question: "",
+        answer: ""
         }
     ]
     }
