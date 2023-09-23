@@ -1,3 +1,5 @@
+#### 사용자 인터뷰 내용을 기반으로 핵심 내용을 요약하는 프롬프트 
+
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (
     ChatPromptTemplate,

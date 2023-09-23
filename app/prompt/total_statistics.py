@@ -1,3 +1,5 @@
+#### 인터뷰들을 통합하여 최종 요약 프롬프트
+
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (
     ChatPromptTemplate,

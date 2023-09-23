@@ -1,3 +1,5 @@
+#### 구글검색, 위키피디아 데이터를 활용한 질문지 생성 프롬프트 
+
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (
     ChatPromptTemplate,

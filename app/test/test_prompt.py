@@ -23,12 +23,12 @@ def main():
     }
 
     test_data = OmegaConf.load("app/test/test_data.yaml")
-    status = test_data.eng.status
+    status = test_data.aidot_1.status
     status = status_dict[status]
-    service = test_data.eng.product_name
-    product_detail = test_data.eng.product_detail
-    interview_goal = test_data.eng.interview_goal
-    target = test_data.org.target_user
+    service = test_data.aidot_1.product_name
+    product_detail = test_data.aidot_1.product_detail
+    interview_goal = test_data.aidot_1.interview_goal
+    target = test_data.aidot_1.target_user
     print("========== request_validation ===============")
     start = time.time()
     validation_res = request_validation(service, product_detail, interview_goal,target)

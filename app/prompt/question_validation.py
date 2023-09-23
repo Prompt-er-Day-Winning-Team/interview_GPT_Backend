@@ -1,3 +1,5 @@
+#### 생성된 질문지의 적절성을 확인해서 기준에 적절하지 않은 부분은 수정하는 프롬프트
+
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (
     ChatPromptTemplate,

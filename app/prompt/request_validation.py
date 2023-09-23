@@ -1,3 +1,6 @@
+#### 사용자가 입력한 내용에 대한 적절성 판별 프롬프트
+#### 적절성과 이유를 답변함
+
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import (
     ChatPromptTemplate,

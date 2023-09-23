@@ -7,6 +7,14 @@ org:
   interview_goal: 에이닷 서비스 사용 방해요소
   target_user: 20대 남자 대학생
 
+aidot_1:
+  status: 4
+  product_name: SKT에이닷
+  product_detail: |
+    SK텔레콤의 AI 서비스
+  interview_goal: 에이닷 서비스 사용 방해요소
+  target_user: 20대 여자 대학생
+
 haruzogak:
   status: 4
   product_name: 하루조각
